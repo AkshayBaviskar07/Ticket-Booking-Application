@@ -27,6 +27,7 @@ public class TrainController {
         return trainService.getAllTrains();
     }
 
+    @GetMapping("train-id/{trainId}")
     public ResponseEntity<Train> getTrainByTrainId(@PathVariable Long trainId){
         // get details by train id
         return trainService.getTrainByTrainId(trainId);
