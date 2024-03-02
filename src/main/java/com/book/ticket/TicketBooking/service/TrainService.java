@@ -38,13 +38,11 @@ public class TrainService {
 
     public ResponseEntity<Train> getTrainByName(String name) {
         // fetch details by name
-        Train train = trainRepo.getByName(name);
-        if(train != null){
-            // train object
-            return new ResponseEntity<>(train, HttpStatus.OK);
-        } else{
-            // not found
-            throw new TrainNotFoundException("Not Found with name " + name);
+        Optional<Train> train = trainRepo.findByName(name);
+        if(train.isPresent()){
+            return new ResponseEntity<>(train.get(), HttpStatus.OK);
+        } else {
+            throw new TrainNotFoundException("Not found");
         }
     }
 

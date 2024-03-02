@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface TrainRepo extends JpaRepository<Train, Integer> {
-    Train getByName(String name);
 
     Optional<Train> findByDepartureAndArrival(String departure, String arrival);
 
