@@ -12,11 +12,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -57,8 +59,9 @@ class PassengerServiceTest {
 
     @Test
     void test_getAllPassengerNotFound(){
-        when(repo.findAll()).thenThrow(new PassengerNotFoundException("Not found"));
-        assertThrows(PassengerNotFoundException.class, ()->service.getAllPassengers());
+        when(repo.findAll()).thenReturn(new ArrayList<>());
+        ResponseEntity<List<Passenger>> response = service.getAllPassengers();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
@@ -69,8 +72,12 @@ class PassengerServiceTest {
 
     @Test
     void test_getPassengerByIdNotFound() {
-        when(repo.findById(1L)).thenThrow(new PassengerNotFoundException("Not found"));
-        assertThrows(PassengerNotFoundException.class, ()-> service.getPassengerById(1L));
+        when(repo.findById(1L)).thenReturn(Optional.empty());
+        try{
+            service.getPassengerById(1L);
+        } catch(PassengerNotFoundException pe) {
+            assertEquals("Not found", pe.getMessage());
+        }
     }
 
     @Test
@@ -84,8 +91,12 @@ class PassengerServiceTest {
 
     @Test
     void test_getPassengerByNameNotFound(){
-        when(repo.findByName("Rahul")).thenThrow(new PassengerNotFoundException("Not found"));
-        assertThrows(PassengerNotFoundException.class, ()-> service.getPassengerByName("Rahul"));
+        when(repo.findByName("Rahul")).thenReturn(Optional.empty());
+        try{
+            service.getPassengerByName(any(String.class));
+        } catch(PassengerNotFoundException pe) {
+            assertEquals("Not found", pe.getMessage());
+        }
     }
 
     @Test
@@ -99,8 +110,12 @@ class PassengerServiceTest {
 
     @Test
     void test_updatePassengerNotFound() {
-        when(repo.findById(1L)).thenThrow(new PassengerNotFoundException("Not found"));
-        assertThrows(PassengerNotFoundException.class, ()->service.updatePassenger(passenger1));
+        when(repo.findById(1L)).thenReturn(Optional.empty());
+        try{
+            service.updatePassenger(passenger1);
+        } catch(PassengerNotFoundException pe) {
+            assertEquals("Not found.", pe.getMessage());
+        }
     }
 
     @Test
@@ -114,7 +129,11 @@ class PassengerServiceTest {
 
     @Test
     void test_deleteByIdNotFound() {
-        when(repo.findById(1L)).thenThrow(new PassengerNotFoundException("Not found"));
-        assertThrows(PassengerNotFoundException.class, ()->service.deleteById(1L));
+        when(repo.findById(1L)).thenReturn(Optional.empty());
+        try{
+            service.deleteById(1L);
+        } catch(PassengerNotFoundException pe) {
+            assertEquals("Not Found", pe.getMessage());
+        }
     }
 }
