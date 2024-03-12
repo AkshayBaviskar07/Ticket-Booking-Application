@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  mysqldb:
+    image: 'mysql'
+    container_name: mysqldb
+    environment:
+      - MYSQL_ROOT_PASSWORD=akshay
+      - MYSQL_DATABASE=ticketsdb
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - bookit-network
+    volumes:
+      - mysqldb-data:/var/lib/mysql
+
+  bookit:
+    build: ./
+    container_name: bookit
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/ticketsdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=akshay
+    networks:
+      - bookit-network
+    ports:
+      - 8080:8080
+
+
+networks:
+  bookit-network:
+
+volumes:
+  mysqldb-data:
+
+
+
